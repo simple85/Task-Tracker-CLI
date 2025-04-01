@@ -60,39 +60,39 @@ public class TaskManager {
     }
 
     void updateTask(int id, String newDescription) {
+        String result = "Task not found";
         for(Task task : tasks) {
             if(task.getId() == id) {
                 task.setDescription(newDescription);
                 task.setUpdatedAt(LocalDateTime.now());
                 saveTasks();
-                System.out.println("Task updated");
-                return;
+                result = "Task updated (ID: " + id + ")";
             }
         }
-        System.out.println("Task not found");
+        System.out.println(result);
     }
     void deleteTask(int id) {
+        String result = "Task not found";
         for(Task task : tasks) {
             if(task.getId() ==id) {
                 tasks.remove(task);
                 saveTasks();
-                System.out.println("Task deleted");
-                return;
+                result = "Task deleted (ID: " + id + ")";
             }
-            else System.out.println("Task not found");
         }
+        System.out.println(result);
     }
     void markStatus(int id, String status) {
+        String result = "Task not found";
         for(Task task : tasks) {
             if(task.getId() == id) {
                 task.setStatus(status);
                 task.setUpdatedAt(LocalDateTime.now());
                 saveTasks();
-                System.out.println("Task marked as: " + status);
-                return;
+                result = "Task marked as: " + status +" (ID: " + id + ")";
             }
-            else System.out.println("Task not found");
         }
+        System.out.println(result);
     }
     void listTasks() {
         for(Task task : tasks) {
