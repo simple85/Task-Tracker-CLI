@@ -14,7 +14,7 @@ public class Task {
         this.description = description;
         this.status = "to-do";
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
     }
 
     JSONObject toJSON() {

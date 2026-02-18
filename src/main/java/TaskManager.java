@@ -4,6 +4,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,21 +12,31 @@ import java.util.List;
 
 public class TaskManager {
     private static final String FILE_NAME = "tasks.json";
+    private final Path filePath;
     private List<Task> tasks;
 
     TaskManager() {
+        this(Paths.get(FILE_NAME));
+    }
+
+    TaskManager(Path filePath) {
+        this.filePath = filePath;
         tasks = new ArrayList<>();
         loadTasks();
     }
 
+    List<Task> getTasks() {
+        return tasks;
+    }
+
     private void loadTasks() {
-        File file = new File(FILE_NAME);
+        File file = filePath.toFile();
         try {
         if(!file.exists()) {
             file.createNewFile();
             saveTasks();
         }
-            String content = new String(Files.readAllBytes(Paths.get(FILE_NAME)));
+            String content = new String(Files.readAllBytes(filePath));
             if(content.isEmpty()) {
                 content = "[]";
             }
@@ -45,14 +56,14 @@ public class TaskManager {
             myArray.put(task.toJSON());
         }
         try {
-            Files.write(Paths.get(FILE_NAME), myArray.toString().getBytes());
+            Files.write(filePath, myArray.toString().getBytes());
         } catch (IOException e) {
             System.out.println("Could not save due to the error:" + e.getMessage());;
         }
     }
 
     void addTask(String description) {
-        int id = tasks.size() + 1;
+        int id = tasks.stream().mapToInt(Task::getId).max().orElse(0) + 1;
         Task newTask = new Task(id, description);
         tasks.add(newTask);
         saveTasks();
@@ -73,12 +84,9 @@ public class TaskManager {
     }
     void deleteTask(int id) {
         String result = "Task not found";
-        for(Task task : tasks) {
-            if(task.getId() ==id) {
-                tasks.remove(task);
-                saveTasks();
-                result = "Task deleted (ID: " + id + ")";
-            }
+        if(tasks.removeIf(task -> task.getId() == id)) {
+            saveTasks();
+            result = "Task deleted (ID: " + id + ")";
         }
         System.out.println(result);
     }
