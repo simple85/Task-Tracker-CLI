@@ -1,69 +1,96 @@
 # Task Tracker CLI
 
-This is a simple command-line interface (CLI) application for managing tasks. You can add, update, delete, mark, and list tasks directly from the terminal.
+[![CI](https://github.com/simple85/Task-Tracker-CLI/actions/workflows/ci.yml/badge.svg)](https://github.com/simple85/Task-Tracker-CLI/actions/workflows/ci.yml)
+![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)
+![Maven](https://img.shields.io/badge/build-Maven-C71A36?logo=apachemaven)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+A lightweight command-line task manager written in plain Java. Tasks are stored as JSON in a local `tasks.json` file, so your list survives between runs without any database.
+
+Built as a solution to the [roadmap.sh Task Tracker](https://roadmap.sh/projects/task-tracker) project.
 
 ## Features
 
-- Add a Task: Add a new task with a description.
-- Update a Task: Update the description of an existing task.
-- Delete a Task: Remove a task by its ID.
-- Mark a Task: Mark a task as "in progress" or "done."
-- List Tasks: List all tasks or filter them by status (e.g., to-do, in progress, done).
-- List commands: List all commands available to use
+- **Add, update and delete** tasks by ID
+- **Track progress** — mark tasks as `in-progress` or `done`
+- **Filter** the list by status (`to-do`, `in-progress`, `done`, `all`)
+- **Persistent storage** in a human-readable JSON file
+- **Timestamps** for creation and last update on every task
 
-## Installation
+## Tech Stack
 
-1. **Clone the repository:**
-  
+| Area | Tools |
+|------|-------|
+| Language | Java 21 |
+| Build | Maven, Maven Shade (runnable fat jar) |
+| JSON | [org.json](https://github.com/stleary/JSON-java) |
+| Testing | JUnit 5, AssertJ, JaCoCo coverage |
+| CI | GitHub Actions |
+
+## Getting Started
+
+**Prerequisites:** JDK 21+ and Maven 3.9+
+
 ```bash
 git clone https://github.com/simple85/Task-Tracker-CLI.git
-cd Task-Tarcker-CLI/src/main/java
+cd Task-Tracker-CLI
+mvn package
 ```
-2. **Compile the source code:**
 
-```
-javac Task.java TaskManager.java TaskTrackerCLI.java
-```
-3. **Run the application:**
-
-```bash
-java TaskCLIApp <command> [arguments]
-```
+This produces a self-contained jar at `target/task-cli.jar`.
 
 ## Usage
-```
-# Adding a new task
-java TaskTrackerCLI add "Buy groceries"
-# Output: Task created (ID: 1)
 
-# Updating a task
-java TaskTrackerCLI update 1 "Buy groceries and cook dinner"
-# Output: Task updated (ID: 1)
-
-# Deleting a task
-java TaskTrackerCLI delete 1
-# Output: Task deleted (ID: 1)
-
-# Marking a task as in progress
-java TaskTrackerCLI mark-in-progress 1
-# Output: Task marked as: in progress (ID: 1)
-
-# Marking a task as done
-java TaskTrackerCLI mark-done 1
-# Output: Task marked as: done (ID: 1)
-
-# Listing all tasks
-java TaskTrackerCLI list
-# Output: List of all tasks
-
-# Listing tasks by status
-java TaskTrackerCLI list to-do
-java TaskTrackerCLI list in-progress
-java TaskTrackerCLI list done
-
-# Listing executable commands
-java TaskTrackerCLI /help
+```bash
+java -jar target/task-cli.jar <command> [arguments]
 ```
 
-This project is created following the guideline of: https://roadmap.sh/projects/task-tracker
+| Command | Description |
+|---------|-------------|
+| `add "<description>"` | Create a new task |
+| `update <id> "<description>"` | Change a task's description |
+| `delete <id>` | Remove a task |
+| `mark-in-progress <id>` | Set status to `in-progress` |
+| `mark-done <id>` | Set status to `done` |
+| `list [status]` | List all tasks, or only those with the given status |
+| `/help` | Show all commands |
 
+### Example
+
+```text
+$ java -jar target/task-cli.jar add "Buy groceries"
+Task created (ID: 1)
+
+$ java -jar target/task-cli.jar mark-in-progress 1
+Task marked as: in-progress (ID: 1)
+
+$ java -jar target/task-cli.jar list in-progress
+ID: 1 | STATUS: in-progress | TASK: Buy groceries | UPDATED: 2026-01-12T10:31:04 | CREATED: 2026-01-12T10:30:12
+```
+
+Tasks are saved to `tasks.json` in the directory you run the command from.
+
+## Project Structure
+
+```text
+src/
+├── main/java/
+│   ├── TaskTrackerCLI.java   # entry point, argument parsing
+│   ├── TaskManager.java      # CRUD operations and JSON persistence
+│   └── Task.java             # task model + JSON (de)serialization
+└── test/java/
+    ├── TaskManagerTest.java
+    └── TaskTest.java
+```
+
+## Running Tests
+
+```bash
+mvn verify
+```
+
+The coverage report is written to `target/site/jacoco/index.html`.
+
+## License
+
+Released under the [MIT License](LICENSE).
